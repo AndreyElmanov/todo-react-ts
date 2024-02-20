@@ -1,0 +1,35 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: rgba(105, 105, 240, 0.514);
+}
+
+.todo_text {
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.all_todos_w, .header_w {
+  width: 100%;
+  border-width: 2px !important;
+}
+
+.opacity-5 {
+  opacity: .6;
+}
+
+.cursor_pointer {
+  cursor: pointer;
+}
+
+@media (min-width: 990px) {
+  .all_todos_w, .header_w {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .todo_text {
+    font-size: 1.4rem;
+  }
+}

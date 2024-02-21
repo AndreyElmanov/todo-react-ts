@@ -8,7 +8,7 @@ import App from './App.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename={'/todo-react-ts/'}>
+    <BrowserRouter basename={'https://andreyelmanov.github.io/todo-react-ts/'}>
       <App />
     </BrowserRouter>
   </React.StrictMode>,

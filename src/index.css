@@ -28,6 +28,18 @@ body {
 
 @media (min-width: 990px) {
   .all_todos_w, .header_w {
+    width: 75%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .all_todos_w, .header_w {
+    width: 60%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .all_todos_w, .header_w {
     width: 50%;
   }
 }

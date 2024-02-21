@@ -1,8 +1,10 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik';
 import * as yup from 'yup';
 import { Button } from 'react-bootstrap';
-import { TodoType, useTodoStore } from '../store/todos';
 import { generateId } from '../helpers/functions';
+import { TodoType } from '../helpers/types';
+import { useApiTodoStore } from '../store/apiTodos';
+import { useTodoStore } from '../store/todos';
 
 type FormikValuesType = {
     title: string
@@ -10,6 +12,7 @@ type FormikValuesType = {
 };
 
 type CreateInputPropsType = {
+    isApiPage: boolean;
     todo?: TodoType;
     setIsEditTodo?: (bool: boolean) => void;
 }
@@ -18,8 +21,9 @@ const initialState: FormikValuesType = {
     title: ''
 }
 
-export default function CreateInput({todo, setIsEditTodo}: CreateInputPropsType) {
-    const [addTodo, editTodo] = useTodoStore(state => [state.addTodo, state.editTodo]);
+export default function CreateInput({todo, setIsEditTodo, isApiPage}: CreateInputPropsType) {
+    const {addTodo, editTodo} = useTodoStore(state => state);
+    const {addApiTodo, editApiTodo} = useApiTodoStore(state => state);
     const btn_text = todo ? 'pencil' : 'plus';
     const btn_variant = todo ? 'info' : 'success';
     const btn_title = todo ? 'Редактировать' : 'Создать';
@@ -31,7 +35,7 @@ export default function CreateInput({todo, setIsEditTodo}: CreateInputPropsType)
                 ...todo,
                 title: values.title,
             };
-            editTodo(new_todo);
+            isApiPage ? editApiTodo(new_todo) : editTodo(new_todo);
             setIsEditTodo(false);
         } else {
             const new_todo: TodoType = {
@@ -39,7 +43,7 @@ export default function CreateInput({todo, setIsEditTodo}: CreateInputPropsType)
                 title: values.title,
                 completed: false,
             };
-            addTodo(new_todo);
+            isApiPage ? addApiTodo(new_todo) : addTodo(new_todo);
         }
         formikHelpers.resetForm();
     };
@@ -54,7 +58,7 @@ export default function CreateInput({todo, setIsEditTodo}: CreateInputPropsType)
                 return (
                 <Form className='d-flex justify-content-center align-items-center w-100 mx-2 '>
                     <Field type="text" name="title" placeholder='Новая задача' autoComplete='off'
-                        className={`m-1 p-1 w-100 ${errors.title && touched.title && todo ? 'border-danger' : ''}`} />
+                        className={`m-1 p-1 w-100 border_radius ${errors.title && touched.title && todo ? 'border-danger' : ''}`} />
                     <Button type="submit" disabled={!isValid} variant={btn_variant} title={btn_title}>
                         <i className={`bi bi-${btn_text}`}></i>
                     </Button>

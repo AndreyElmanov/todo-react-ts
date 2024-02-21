@@ -1,14 +1,25 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button, ButtonGroup, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router";
 import OneTodo from "./OneTodo";
-import { TodoType, useTodoStore } from "../store/todos"
+import { TodoType } from "../helpers/types";
+import { useApiTodoStore } from "../store/apiTodos";
 
 type FilterType = 'new' | 'done' | 'all';
 
-export default function AllTodos() {
-    const [todos, doneTodo] = useTodoStore(state => [state.todos, state.doneTodo]);
+type AllTodosPropsType = {
+    todos: TodoType[];
+    doneTodo: TodoType[];
+}
+
+export default function AllTodos({todos, doneTodo}: AllTodosPropsType) {
     const [filter, setFilter] = useState<FilterType>('new');
     const [mapTodos, setMapTodos] = useState<TodoType[]>(todos);
+    const {isLoading, loadingTitle} = useApiTodoStore(state => state);
+    const isLoadingTitle = loadingTitle === 'addTodo' || loadingTitle === 'deleteTodo' || loadingTitle === 'editTodo';
+    const location = useLocation();
+    const isApiPage = location.pathname === '/apiTodos';
+    const title = isApiPage ? "apiToDo's" : "toDo's";
 
     useEffect(() => {
         const new_todos = filteredTodos(filter);
@@ -25,9 +36,12 @@ export default function AllTodos() {
     };
 
     return (
-        <div className="d-flex flex-column justify-content-start all_todos_w border p-3 border-dark bg-light mb-3" style={{minHeight: 200}}>
+        <div className="d-flex flex-column justify-content-start all_todos_w border border_radius p-3 border-dark bg-light mb-3" style={{minHeight: 200}}>
             <div className="d-flex justify-content-between align-items-center my-1 p-1">
-                <h1>{filter} toDo's</h1>
+                <div className="d-flex align-items-center">
+                    <h1>{filter} {title}</h1>
+                    {isLoading && isLoadingTitle && <Spinner className="mx-2" as={'span'} style={{height: '1.5rem', width: '1.5rem'}}/>}
+                </div>
                 <ButtonGroup size='sm' vertical={false}>
                     <Button variant={'success'} onClick={()=>setFilter('new')} title="Новые" disabled={filter === 'new'}>New</Button>
                     <Button variant={'warning'} onClick={()=>setFilter('done')} title="Выполненные" disabled={filter === 'done'}>Done</Button>
@@ -36,7 +50,7 @@ export default function AllTodos() {
             </div>
             <div className="overflow-auto">
                 {mapTodos.length > 0
-                    ? mapTodos.map(el => <OneTodo todo={el} key={el.id}/>)
+                    ? mapTodos.map(el => <OneTodo todo={el} key={`${el.id}/${el.title}/${el.userId}`} isApiPage={isApiPage} />)
                     : <h3 className="text-center mt-2">Список пуст</h3>}
             </div>
         </div>

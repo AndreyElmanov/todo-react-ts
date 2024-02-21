@@ -1,27 +1,22 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-
-export type TodoType = {
-    id: string;
-    title: string;
-    completed: boolean;
-}
+import { TodoType } from '../helpers/types';
 
 type TodoStoreType = {
     todos: TodoType[];
-    doneTodo: TodoType[];
+    doneTodos: TodoType[];
     addTodo: (todo: TodoType) => void;
-    deleteTodo: (id: string) => void;
-    deleteDoneTodo: (id: string) => void;
+    deleteTodo: (id: string | number) => void;
+    deleteDoneTodo: (id: string | number) => void;
     editTodo: (todo: TodoType) => void;
-    completeTodo: (id: string, completed: boolean) => void;
+    completeTodo: (id: string | number, completed: boolean) => void;
 }
 
 export const useTodoStore = create<TodoStoreType, [["zustand/persist", unknown]]>(
     persist(
         (set, get) => ({
             todos: [],
-            doneTodo: [],
+            doneTodos: [],
             addTodo: (todo) => {
                 const old_todos = get().todos;
                 set({ todos: [todo, ...old_todos] });
@@ -31,23 +26,23 @@ export const useTodoStore = create<TodoStoreType, [["zustand/persist", unknown]]
                 set({ todos: new_todos });
             },
             deleteDoneTodo: (id) => {
-                const new_todos = get().doneTodo.filter(el => el.id !== id);
-                set({ doneTodo: new_todos });
+                const new_todos = get().doneTodos.filter(el => el.id !== id);
+                set({ doneTodos: new_todos });
             },
             editTodo: (todo) => {
                 const new_todos = get().todos.map(el => el.id !== todo.id ? el : todo);
                 set({todos: new_todos});
             },
             completeTodo: (id, completed) => {
-                const {todos, doneTodo} = get();
+                const {todos, doneTodos} = get();
                 let new_todos: TodoType[] = [];
                 let new_todosDone: TodoType[] = [];
                 completed
-                    ? doneTodo.forEach(el => el.id !== id ? new_todosDone.push(el) : (new_todos = [...todos, {...el, completed: false}]))
-                    : todos.forEach(el => el.id !== id ? new_todos.push(el) : (new_todosDone = [{...el, completed: true}, ...doneTodo]));
+                    ? doneTodos.forEach(el => el.id !== id ? new_todosDone.push(el) : (new_todos = [...todos, {...el, completed: false}]))
+                    : todos.forEach(el => el.id !== id ? new_todos.push(el) : (new_todosDone = [{...el, completed: true}, ...doneTodos]));
                 set({
                     todos: new_todos,
-                    doneTodo: new_todosDone,
+                    doneTodos: new_todosDone,
                 });
             },
         }),

@@ -1,4 +1,4 @@
-# React + TypeScript + Vite + Zustand + Bootstrap + Formik
+# React + TypeScript + Vite + Zustand + Bootstrap + Formik + Axios
 
 In the project directory, you can run:
 
